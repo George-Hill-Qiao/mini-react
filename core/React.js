@@ -99,21 +99,37 @@ function initChildren(fiber, children) {
     prevChild = newFiber;
   });
 }
-
+function updateFunctionComponent(fiber) {
+  const children = [fiber.type(fiber.props)]
+  initChildren(fiber, children)
+};
+function updateHostComponet(fiber) {
+  if (!fiber.dom) {
+    const dom = (fiber.dom = createDom(fiber.type));
+    updateProps(dom, fiber.props);
+  }
+  const children = fiber.props.children;
+  initChildren(fiber, children)
+}
 function performWorkOfUnit(fiber) {
   const isFunctionComponent = typeof fiber.type === 'function'
-  // if(isFunctionComponent){
-  //   console.log(fiber.type());
-  // }
-  if (!isFunctionComponent) {
-    if (!fiber.dom) {
-      const dom = (fiber.dom = createDom(fiber.type));
-      // fiber.parent.dom.append(dom);
-      updateProps(dom, fiber.props);
-    }
+  if (isFunctionComponent) {
+    updateFunctionComponent(fiber)
+  } else {
+    updateHostComponet(fiber)
   }
-  const children = isFunctionComponent ? [fiber.type(fiber.props)] : fiber.props.children;
-  initChildren(fiber, children)
+  // // if(isFunctionComponent){
+  // //   console.log(fiber.type());
+  // // }
+  // if (!isFunctionComponent) {
+  //   if (!fiber.dom) {
+  //     const dom = (fiber.dom = createDom(fiber.type));
+  //     // fiber.parent.dom.append(dom);
+  //     updateProps(dom, fiber.props);
+  //   }
+  // }
+  // const children = isFunctionComponent ? [fiber.type(fiber.props)] : fiber.props.children;
+  // initChildren(fiber, children)
 
   // 4. 返回下一个要执行的任务
   if (fiber.child) {
