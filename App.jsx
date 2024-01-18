@@ -1,16 +1,17 @@
 import React from "./core/React.js";
-let count = 10;
-let props = { id: '111111111' }
+let showBar = false;
 function Counter({ num }) {
-    function handleClick() {
-        console.log('clicking');
-        count++
-        props = { id: '222222' }
-        React.update()
-    }
-    return <div {...props}>
-        count:{count}
-        <button onClick={handleClick}>click</button>
+function Foo(){
+return <div>foo</div>
+}
+const bar = <p>bar</p>
+function handleShowBar(){
+    showBar = !showBar
+    React.update()
+}
+    return <div>
+        <div>{showBar? bar: <Foo></Foo>}</div>
+        <button onClick={handleShowBar}>showBar</button>
     </div>
 }
 function CounterContainer() {
