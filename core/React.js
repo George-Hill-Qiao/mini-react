@@ -56,14 +56,14 @@ function commitRoot() {
   wipRoot = null
   deletions = []
 }
-function commitDeletion(fiber){
-  if(fiber.dom){
+function commitDeletion(fiber) {
+  if (fiber.dom) {
     let fiberParent = fiber.parent
     while (!fiberParent.dom) {
       fiberParent = fiberParent.parent
     }
     fiberParent.dom.removeChild(fiber.dom)
-  }else{
+  } else {
     commitDeletion(fiber.child)
   }
 
@@ -162,8 +162,8 @@ function reconcileChildren(fiber, children) {
         dom: null,
         effectTag: 'placement'
       };
-      if(oldFiber){
-        console.log('should delete',oldFiber);
+      if (oldFiber) {
+        console.log('should delete', oldFiber);
         deletions.push(oldFiber)
       }
     }
@@ -178,6 +178,10 @@ function reconcileChildren(fiber, children) {
     }
     prevChild = newFiber;
   });
+  while (oldFiber) {
+    deletions.push(oldFiber)
+    oldFiber = oldFiber.sibling
+  }
 }
 function updateFunctionComponent(fiber) {
   const children = [fiber.type(fiber.props)]

@@ -1,17 +1,22 @@
 import React from "./core/React.js";
 let showBar = false;
 function Counter({ num }) {
-function Foo(){
-return <div>foo</div>
-}
-const bar = <p>bar</p>
-function handleShowBar(){
-    showBar = !showBar
-    React.update()
-}
+    const foo = (
+        <div>
+            foo
+            <div>child1</div>
+            <div>child2</div>
+        </div>
+    )
+    const bar = <div>bar</div>
+    function handleShowBar() {
+        showBar = !showBar
+        React.update()
+    }
     return <div>
-        <div>{showBar? bar: <Foo></Foo>}</div>
+        Counter
         <button onClick={handleShowBar}>showBar</button>
+        <div>{showBar ? bar : foo}</div>
     </div>
 }
 function CounterContainer() {
