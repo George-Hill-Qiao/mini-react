@@ -8,7 +8,7 @@ function createTextNode(text) {
   };
 }
 
-function  createElement(type, props, ...children) {
+function createElement(type, props, ...children) {
   return {
     type,
     props: {
@@ -44,8 +44,7 @@ function workLoop(deadline) {
     nextWorkOfUnit = performWorkOfUnit(nextWorkOfUnit);
 
     if (wipRoot?.sibling?.type === nextWorkOfUnit?.type) {
-      console.log("hit", wipRoot, nextWorkOfUnit);
-      nextWorkOfUnit = undefined
+      nextWorkOfUnit = undefined;
     }
 
     shouldYield = deadline.timeRemaining() < 1;
@@ -175,7 +174,6 @@ function reconcileChildren(fiber, children) {
       }
 
       if (oldFiber) {
-        console.log("should delete", oldFiber);
         deletions.push(oldFiber);
       }
     }
@@ -203,6 +201,8 @@ function reconcileChildren(fiber, children) {
 }
 
 function updateFunctionComponent(fiber) {
+  stateHooks = [];
+  stateHookIndex = 0;
   wipFiber = fiber;
 
   const children = [fiber.type(fiber.props)];
@@ -248,8 +248,6 @@ function update() {
   let currentFiber = wipFiber;
 
   return () => {
-    console.log(currentFiber);
-
     wipRoot = {
       ...currentFiber,
       alternate: currentFiber,
@@ -265,8 +263,49 @@ function update() {
   };
 }
 
+let stateHooks;
+let stateHookIndex;
+function useState(initial) {
+  let currentFiber = wipFiber;
+  const oldHook = currentFiber.alternate?.stateHooks[stateHookIndex];
+  const stateHook = {
+    state: oldHook ? oldHook.state : initial,
+    queue: oldHook ? oldHook.queue : [],
+  };
+
+  stateHook.queue.forEach((action) => {
+    stateHook.state = action(stateHook.state);
+  });
+
+  stateHook.queue = [];
+
+  stateHookIndex++;
+  stateHooks.push(stateHook);
+
+  currentFiber.stateHooks = stateHooks;
+
+  function setState(action) {
+    const eagerState =
+      typeof action === "function" ? action(stateHook.state) : action;
+
+    if (eagerState === stateHook.state) return;
+
+    stateHook.queue.push(typeof action === "function" ? action : () => action);
+
+    wipRoot = {
+      ...currentFiber,
+      alternate: currentFiber,
+    };
+
+    nextWorkOfUnit = wipRoot;
+  }
+
+  return [stateHook.state, setState];
+}
+
 const React = {
   update,
+  useState,
   render,
   createElement,
 };
