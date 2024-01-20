@@ -1,4 +1,6 @@
 import React from "./core/React.js";
+// useEffect 
+//  调用时机是在React完成对Dom的渲染之后，并且浏览器完成绘制之前
 
 function Foo() {
   console.log("re foo")
@@ -8,8 +10,14 @@ function Foo() {
     setCount((c) => c + 1);
     // setBar((s) => s + "bar");
     // setBar("barbar");
-    setBar(()=>"bar")
+    setBar(() => "bar")
   }
+  React.useEffect(() => {
+    console.log('init');
+  }, [])
+  //  useEffect(()=>{
+  //   console.log('update');
+  // },[count])
 
   return (
     <div>
