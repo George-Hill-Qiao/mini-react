@@ -15,9 +15,9 @@ function Foo() {
   React.useEffect(() => {
     console.log('init');
   }, [])
-  //  useEffect(()=>{
-  //   console.log('update');
-  // },[count])
+  React.useEffect(() => {
+    console.log('update', count);
+  }, [count])
 
   return (
     <div>
